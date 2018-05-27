@@ -64,6 +64,31 @@
             Assert.That(rover.Position, Is.EqualTo(expectedPosition));
         }
 
+
+        [Test]
+        public void SingleCommandBShouldMoveRoverBackwardByOneGridPoint()
+        {
+            var rover = new Rover(5, 5, 'N');
+            rover.Move("B");
+            var expectedPosition = new Position(5, 4, 'N');
+            Assert.That(rover.Position, Is.EqualTo(expectedPosition));
+
+            rover = new Rover(5, 5, 'S');
+            rover.Move("B");
+            expectedPosition = new Position(5, 6, 'S');
+            Assert.That(rover.Position, Is.EqualTo(expectedPosition));
+
+            rover = new Rover(5, 5, 'E');
+            rover.Move("B");
+            expectedPosition = new Position(4, 5, 'E');
+            Assert.That(rover.Position, Is.EqualTo(expectedPosition));
+
+            rover = new Rover(5, 5, 'W');
+            rover.Move("B");
+            expectedPosition = new Position(6, 5, 'W');
+            Assert.That(rover.Position, Is.EqualTo(expectedPosition));
+        }
+
         [Test]
         public void CommandIsCaseInsensitive()
         {
@@ -76,6 +101,13 @@
             rover.Move("f");
             expectedPosition = new Position(5, 6, 'N');
             Assert.That(rover.Position, Is.EqualTo(expectedPosition));
+        }
+
+        [Test]
+        public void MovingRoverWithUnrecognizedCommandShouldThrowException()
+        {
+            var rover = new Rover(0, 0, 'N');
+            Assert.Throws<Exception>(() => rover.Move("x")).Message.Equals("Command 'x' is not valid.");
         }
     }
 }
