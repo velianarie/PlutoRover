@@ -29,6 +29,28 @@
             }
         }
 
+        private static IEnumerable<TestCaseData> SingleCommandLTestData
+        {
+            get
+            {
+                yield return new TestCaseData(new Rover(5, 5, Orientation.North), new Position(5, 5, Orientation.West));
+                yield return new TestCaseData(new Rover(5, 5, Orientation.South), new Position(5, 5, Orientation.East));
+                yield return new TestCaseData(new Rover(5, 5, Orientation.East), new Position(5, 5, Orientation.North));
+                yield return new TestCaseData(new Rover(5, 5, Orientation.West), new Position(5, 5, Orientation.South));
+            }
+        }
+
+        private static IEnumerable<TestCaseData> SingleCommandRTestData
+        {
+            get
+            {
+                yield return new TestCaseData(new Rover(5, 5, Orientation.North), new Position(5, 5, Orientation.East));
+                yield return new TestCaseData(new Rover(5, 5, Orientation.South), new Position(5, 5, Orientation.West));
+                yield return new TestCaseData(new Rover(5, 5, Orientation.East), new Position(5, 5, Orientation.South));
+                yield return new TestCaseData(new Rover(5, 5, Orientation.West), new Position(5, 5, Orientation.North));
+            }
+        }
+
         [Test]
         public void NewRoverInstanceShouldSetItsPosition()
         {
@@ -56,6 +78,20 @@
         {
             var rover = new Rover(0, 0, Orientation.North);
             Assert.Throws<Exception>(() => rover.Move("x")).Message.Equals("Command 'x' is not valid.");
+        }
+
+        [Test, TestCaseSource(nameof(SingleCommandLTestData))]
+        public void SingleCommandLShouldTurnRover90DegreesLeft(Rover rover, Position expectedPosition)
+        {
+            rover.Move("L");
+            Assert.That(rover.Position, Is.EqualTo(expectedPosition));
+        }
+
+        [Test, TestCaseSource(nameof(SingleCommandRTestData))]
+        public void SingleCommandRShouldTurnRover90DegreesRight(Rover rover, Position expectedPosition)
+        {
+            rover.Move("R");
+            Assert.That(rover.Position, Is.EqualTo(expectedPosition));
         }
     }
 }

@@ -3,6 +3,8 @@ namespace PlutoRover
     public enum Command
     {
         Forward,
-        Backward
+        Backward,
+        Left,
+        Right
     }
 }
