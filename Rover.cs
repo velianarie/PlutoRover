@@ -1,6 +1,7 @@
 namespace PlutoRover
 {
     using System;
+    using System.Collections.Generic;
 
     public class Rover
     {
@@ -8,6 +9,7 @@ namespace PlutoRover
         private int y;
         private Orientation orientation;
         private Pluto pluto;
+        private Tuple<int, int> detectedObstacle;
 
         public Rover(int x, int y, Orientation orientation)
         {
@@ -21,37 +23,37 @@ namespace PlutoRover
             get { return new Position(x, y, orientation); }
         }
 
+        public Tuple<int, int> DetectedObstacle
+        {
+            get { return detectedObstacle; }
+        }
+
         public void Move(string commands)
         {
             foreach (var commandChar in commands)
             {
                 var command = InputParser.ParseCommand(commandChar);
-                if (pluto == null)
-                {
-                    Move(command, null, null);
-                }
-                else
-                {
-                    Move(command, pluto.Width, pluto.Length);
-                }
+                Move(command, pluto);
             }
         }
 
-        private void Move(Command command, int? maxX, int? maxY)
+        private void Move(Command command, Pluto pluto)
         {
+            int candidateX = x;
+            int candidateY = y;
             switch (command)
             {
                 case Command.Forward:
-                    if (orientation == Orientation.North) y = y + 1;
-                    else if (orientation == Orientation.South) y = y - 1;
-                    else if (orientation == Orientation.East) x = x + 1;
-                    else x = x - 1;
+                    if (orientation == Orientation.North) candidateY = candidateY + 1;
+                    else if (orientation == Orientation.South) candidateY = candidateY - 1;
+                    else if (orientation == Orientation.East) candidateX = candidateX + 1;
+                    else candidateX = candidateX - 1;
                     break;
                 case Command.Backward:
-                    if (orientation == Orientation.North) y = y - 1;
-                    else if (orientation == Orientation.South) y = y + 1;
-                    else if (orientation == Orientation.East) x = x - 1;
-                    else x = x + 1;
+                    if (orientation == Orientation.North) candidateY = candidateY - 1;
+                    else if (orientation == Orientation.South) candidateY = candidateY + 1;
+                    else if (orientation == Orientation.East) candidateX = candidateX - 1;
+                    else candidateX = candidateX + 1;
                     break;
                 case Command.Left:
                     if (orientation == Orientation.North) orientation = Orientation.West;
@@ -69,16 +71,35 @@ namespace PlutoRover
                     throw new Exception($"Command '{command}' is not valid.");
             }
 
-            if (maxX.HasValue)
+            bool isBlocked = false;
+            if (pluto != null)
             {
-                if (x > maxX.Value) x = x - maxX.Value - 1;
-                if (x < 0) x = maxX.Value + x + 1;
+                List<Tuple<int, int>> obstacles = pluto.Obstacles;
+                for (int i = 0; i < obstacles.Count && !isBlocked; i++)
+                {
+                    Tuple<int, int> obstacle = obstacles[i];
+                    int obstacleX = obstacle.Item1;
+                    int obstacleY = obstacle.Item2;
+                    if (obstacle.Item1 == candidateX && obstacle.Item2 == candidateY)
+                    {
+                        detectedObstacle = new Tuple<int, int>(obstacleX, obstacleY);
+                        isBlocked = true;
+                    }
+                }
+
+                int maxX = pluto.Width;
+                int maxY = pluto.Length;
+                if (candidateX > maxX) candidateX = candidateX - maxX - 1;
+                if (candidateX < 0) candidateX = maxX + candidateX + 1;
+
+                if (candidateY > maxY) candidateY = candidateY - maxY - 1;
+                if (candidateY < 0) candidateY = maxY + candidateY + 1;
             }
 
-            if (maxY.HasValue)
+            if (!isBlocked)
             {
-                if (y > maxY.Value) y = y - maxY.Value - 1;
-                if (y < 0) y = maxY.Value + y + 1;
+                x = candidateX;
+                y = candidateY;
             }
         }
 

@@ -129,5 +129,30 @@
             rover.Move(commands);
             Assert.That(rover.Position, Is.EqualTo(expectedPosition));
         }
+
+        [Test]
+        public void RoverShouldDetectObstacleBeforeMoving()
+        {
+            var obstacle1 = new Tuple<int, int>(5, 3);
+            var obstacle2 = new Tuple<int, int>(1, 1);
+
+            var pluto = new Pluto(5, 5);
+            pluto.AddObstacle(obstacle1);
+            pluto.AddObstacle(obstacle2);
+
+            var rover = new Rover(3, 3, Orientation.East);
+            rover.DeployTo(pluto);
+            rover.Move("FF");
+            var expectedPosition = new Position(4, 3, Orientation.East);
+            Assert.That(rover.Position, Is.EqualTo(expectedPosition));
+            Assert.That(rover.DetectedObstacle, Is.EqualTo(obstacle1));
+
+            rover = new Rover(5, 1, Orientation.East);
+            rover.DeployTo(pluto);
+            rover.Move("FF");
+            expectedPosition = rover.Position;
+            Assert.That(rover.Position, Is.EqualTo(expectedPosition));
+            Assert.That(rover.DetectedObstacle, Is.EqualTo(obstacle2));
+        }
     }
 }
