@@ -4,9 +4,9 @@
     {
         private readonly int x;
         private readonly int y;
-        private readonly char orientation;
+        private readonly Orientation orientation;
 
-        public Position(int x, int y, char orientation)
+        public Position(int x, int y, Orientation orientation)
         {
             this.x = x;
             this.y = y;
