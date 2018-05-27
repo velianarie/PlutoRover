@@ -93,5 +93,14 @@
             rover.Move("R");
             Assert.That(rover.Position, Is.EqualTo(expectedPosition));
         }
+
+        [Test]
+        public void ChainOfCommands()
+        {
+            var rover = new Rover(0, 0, Orientation.North);
+            rover.Move("FFRFF");
+            var expectedPosition = new Position(2, 2, Orientation.East);
+            Assert.That(rover.Position, Is.EqualTo(expectedPosition));
+        }
     }
 }
