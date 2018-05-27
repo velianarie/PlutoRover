@@ -36,5 +36,10 @@
                 return hashCode;
             }
         }
+
+        public override string ToString()
+        {
+            return $"(x, y): ({x}, {y}) | Facing: {orientation}";
+        }
     }
 }
