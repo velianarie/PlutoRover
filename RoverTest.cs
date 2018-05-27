@@ -40,6 +40,25 @@
             }
         }
 
+        private static IEnumerable<TestCaseData> WrappingTestData
+        {
+            get
+            {
+                var pluto = new Pluto(5, 5);
+                yield return new TestCaseData(new Rover(5, 5, Orientation.North), pluto, "FFFFFFF", new Position(5, 0, Orientation.North));
+                yield return new TestCaseData(new Rover(0, 0, Orientation.North), pluto, "BBBBBBB", new Position(0, 5, Orientation.North));
+
+                yield return new TestCaseData(new Rover(5, 5, Orientation.South), pluto, "FFFFFFF", new Position(5, 4, Orientation.South));
+                yield return new TestCaseData(new Rover(0, 0, Orientation.South), pluto, "BBBBBBB", new Position(0, 1, Orientation.South));
+
+                yield return new TestCaseData(new Rover(5, 5, Orientation.East), pluto, "FFFFFFF", new Position(0, 5, Orientation.East));
+                yield return new TestCaseData(new Rover(0, 0, Orientation.East), pluto, "BBBBBBB", new Position(5, 0, Orientation.East));
+
+                yield return new TestCaseData(new Rover(5, 5, Orientation.West), pluto, "FFFFFFF", new Position(4, 5, Orientation.West));
+                yield return new TestCaseData(new Rover(0, 0, Orientation.West), pluto, "BBBBBBB", new Position(1, 0, Orientation.West));
+            }
+        }
+
         private static IEnumerable<TestCaseData> SingleCommandRTestData
         {
             get
@@ -100,6 +119,14 @@
             var rover = new Rover(0, 0, Orientation.North);
             rover.Move("FFRFF");
             var expectedPosition = new Position(2, 2, Orientation.East);
+            Assert.That(rover.Position, Is.EqualTo(expectedPosition));
+        }
+
+        [Test, TestCaseSource(nameof(WrappingTestData))]
+        public void RoverInPlutoShouldBeAbleToMoveAroundThePlanetWithoutFallingOff(Rover rover, Pluto pluto, string commands, Position expectedPosition)
+        {
+            rover.DeployTo(pluto);
+            rover.Move(commands);
             Assert.That(rover.Position, Is.EqualTo(expectedPosition));
         }
     }
