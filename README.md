@@ -8,8 +8,8 @@
 ## Code style:
 * Using `var` keyword could be offensive to some people, I have some opinions about it, but not holding on those tightly. I'm only using it if the type is not directly obvious.
 * I'm not using underscore prefix for private variable names because that's the standard in Cardano and I'm used to it now. I myself have no strong opinion about it, my motto is: use whatever style suits you, as long as it's consistent
-* I don't use auto property.
-* I don't use expression body.
+* I don't usually use auto property even though Resharper suggested it as I would like to make it explicit (mostly to myself) that it is a property not a public field and whether it's a read-only or not 
+* I don't use expression body, mostly because I can't get used to the syntax yet :)
 
 ## Changes I consider making
 * Replace `Tuple<int, int>` with `Coordinate` class
@@ -18,7 +18,7 @@
 * `if else` statements in `Move()` strikes me as a bit of a code smell (see below my thoughts of how to possibly improve this)
 * `Move()` function is too long, could be split into smaller chunks.
 
-My thoughts to improve Command Left & Right:
+### My thoughts to improve Command Left & Right:
 We could use some mathematical tricks like assigning integer number to the `Orientation` enum. Pick an orientation, assign integer value 1 then go clockwise and assign the next integer value, so something like: 
 `East = 1, South = 2, West = 3, North = 4`.
 
@@ -36,7 +36,7 @@ Example:
 * current orientation: E ==> (1 - 1) = 0 (the previous orientation is North)
 * current orientation: W ==> (3 - 1) = 2 (South)
 
-For `Right`, apply similar formula, it is the opposite of Left:
+Apply similar trick to `Right`, it is the opposite of Left after all:
 <blockquote>
 if (current orientation + 1) > 4, then get the next orientation as if the enum is a circle
 </blockquote>
@@ -50,12 +50,14 @@ Example:
 * current orientation: E ==> (1 + 1) = 2 (South)
 *	current orientation: W ==> (3 + 1) = 4 (North)
 
-These two formulas would reduce the 8 `if else` statements to 2 functions.
+This trick would reduce the 8 `if else` statements to 2 functions.
 
+Note however that I haven't thought about whether the two above pseudocodes would work for different enumeration value ie. if you start with `North = 1` for example.
 
-For Command Forward & Backward, we can see the following pattern:
+For Command `Forward` & `Backward`, we can see the following pattern:
 * Forward North = Backward South
 * Foward South = Backward North
 * Forward East = Backward West
 * Forward West = Backward East
+
 So perhaps we can reduce some of the `if else` statements based on these facts.
